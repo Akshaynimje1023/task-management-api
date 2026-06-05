@@ -12,7 +12,8 @@ class TaskController extends Controller
     {
         return Task::with([
             'project',
-            'assignedUser'
+            'assignedUser',
+            'comments.user'
         ])->latest()->get();
     }
 

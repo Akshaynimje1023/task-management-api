@@ -28,4 +28,9 @@ class Task extends Model
             'assigned_to'
         );
     }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
 }
