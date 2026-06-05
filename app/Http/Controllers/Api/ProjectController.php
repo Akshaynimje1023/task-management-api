@@ -3,47 +3,63 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Project;
 use Illuminate\Http\Request;
 
 class ProjectController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        return Project::with('user')->latest()->get();
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required|max:255',
+            'description' => 'nullable'
+        ]);
+
+        $project = Project::create([
+            'name' => $request->name,
+            'description' => $request->description,
+            'created_by' => auth()->id()
+        ]);
+
+        return response()->json([
+            'message' => 'Project Created',
+            'data' => $project
+        ],201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function show(Project $project)
     {
-        //
+        return $project->load('user');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Project $project)
     {
-        //
+        $request->validate([
+            'name' => 'required|max:255'
+        ]);
+
+        $project->update([
+            'name' => $request->name,
+            'description' => $request->description
+        ]);
+
+        return response()->json([
+            'message' => 'Project Updated',
+            'data' => $project
+        ]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy(Project $project)
     {
-        //
+        $project->delete();
+
+        return response()->json([
+            'message' => 'Project Deleted'
+        ]);
     }
 }
